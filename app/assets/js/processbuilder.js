@@ -53,6 +53,7 @@ class ProcessBuilder {
         this.usingFabricLoader = this.server.modules.some(mdl => mdl.rawModule.type === Type.Fabric)
         logger.info('Using fabric loader:', this.usingFabricLoader)
         const modObj = this.resolveModConfiguration(ConfigManager.getModConfiguration(this.server.rawServer.id).mods, this.server.modules)
+        this.stagePhysicalMods(modObj.fMods)
         
         // Mod list below 1.13
         // Fabric only supports 1.14+
@@ -885,6 +886,29 @@ class ProcessBuilder {
             }
         }
         return libs
+    }
+
+    stagePhysicalMods(mods) {
+        const modsDir = path.join(this.gameDir, 'mods')
+        fs.ensureDirSync(modsDir)
+
+        for (const mod of mods) {
+            const raw = mod.rawModule
+            const id = raw.id || ''
+            const name = raw.name || ''
+            const modPath = mod.getPath()
+            const fileName = path.basename(modPath)
+
+            const shouldStage =
+                id.includes('mts') ||
+                name.includes('MTS') ||
+                fileName.includes('MTS')
+
+            if (shouldStage) {
+                fs.copyFileSync(modPath, path.join(modsDir, fileName))
+                logger.info(`Staged physical mod: ${fileName}`)
+            }
+        }
     }
 
 }
