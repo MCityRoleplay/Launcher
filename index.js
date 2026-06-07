@@ -2,7 +2,7 @@ const remoteMain = require('@electron/remote/main')
 remoteMain.initialize()
 
 // Requirements
-const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron')
+const { app, BrowserWindow, ipcMain, Menu, shell, session } = require('electron')
 const autoUpdater                       = require('electron-updater').autoUpdater
 const ejse                              = require('ejs-electron')
 const fs                                = require('fs')
@@ -222,6 +222,24 @@ ipcMain.on(MSFT_OPCODE.OPEN_LOGOUT, (ipcEvent, uuid, isLastAccount) => {
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
+function setupMicrophonePermissions() {
+    session.defaultSession.setPermissionRequestHandler((webContents, permission, callback, details) => {
+        const url = webContents.getURL()
+        const isMainWindow = win && webContents.id === win.webContents.id
+
+        if (
+            isMainWindow &&
+            permission === 'media' &&
+            details.mediaTypes?.includes('audio')
+        ) {
+            callback(true)
+            return
+        }
+
+        callback(false)
+    })
+}
+
 function createWindow() {
 
     win = new BrowserWindow({
@@ -339,8 +357,11 @@ function getPlatformIcon(filename){
     return path.join(__dirname, 'app', 'assets', 'images', `${filename}.${ext}`)
 }
 
-app.on('ready', createWindow)
-app.on('ready', createMenu)
+app.on('ready', () => {
+    setupMicrophonePermissions()
+    createWindow()
+    createMenu()
+})
 
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar

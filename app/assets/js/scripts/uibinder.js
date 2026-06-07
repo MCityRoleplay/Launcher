@@ -86,7 +86,9 @@ async function showMainUI(data){
         } else {
             if(isLoggedIn){
                 currentView = VIEWS.landing
-                $(VIEWS.landing).fadeIn(1000)
+                $(VIEWS.landing).fadeIn(1000, async () => {
+                    await requestMicrophoneAccess()
+                })
             } else {
                 loginOptionsCancelEnabled(false)
                 loginOptionsViewOnLoginSuccess = VIEWS.landing
@@ -455,6 +457,20 @@ ipcRenderer.on('distributionIndexDone', async (event, res) => {
         }
     }
 })
+
+async function requestMicrophoneAccess() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true
+        })
+
+        console.log('Microphone access granted')
+        return stream
+    } catch(error) {
+        console.error('Microphone access denied:', error)
+        return null
+    }
+}
 
 // Util for development
 async function devModeToggle() {
