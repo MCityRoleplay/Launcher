@@ -606,6 +606,7 @@ async function dlAsync(login = true) {
 
         try {
             // Build Minecraft process.
+            await new Promise(resolve => pb.forceServerResourcePack(resolve))
             proc = pb.build()
 
             // Bind listeners to stdout.

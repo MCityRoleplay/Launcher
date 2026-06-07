@@ -12,6 +12,8 @@ const ConfigManager            = require('./configmanager')
 
 const logger = LoggerUtil.getLogger('ProcessBuilder')
 
+const nbt                   = require('nbt')
+
 
 /**
  * Only forge and fabric are top level mod loaders.
@@ -908,6 +910,90 @@ class ProcessBuilder {
                 fs.copyFileSync(modPath, path.join(modsDir, fileName))
                 logger.info(`Staged physical mod: ${fileName}`)
             }
+        }
+    }
+
+    forceServerResourcePack(callback) {
+        const serversDat = path.join(this.gameDir, 'servers.dat')
+
+        const serverName = this.server.rawServer.name
+        const serverIp = this.server.rawServer.address
+
+        const patchData = (data) => {
+            if (!data.value.servers) {
+                data.value.servers = {
+                    type: 'list',
+                    value: {
+                        type: 'compound',
+                        value: []
+                    }
+                }
+            }
+
+            const servers = data.value.servers.value.value
+
+            let entry = servers.find(s =>
+                s.ip?.value === serverIp ||
+                s.name?.value === serverName
+            )
+
+            if (!entry) {
+                entry = {
+                    name: {
+                        type: 'string',
+                        value: serverName
+                    },
+                    ip: {
+                        type: 'string',
+                        value: serverIp
+                    }
+                }
+
+                servers.push(entry)
+            }
+
+            entry.acceptTextures = {
+                type: 'byte',
+                value: 1
+            }
+
+            fs.writeFileSync(serversDat, Buffer.from(nbt.writeUncompressed(data)))
+            logger.info(`Forced resource packs enabled for ${serverName}`)
+            callback()
+        }
+
+        if (fs.existsSync(serversDat)) {
+            fs.readFile(serversDat, (err, data) => {
+                if (err) {
+                    logger.warn('Unable to read servers.dat', err)
+                    callback()
+                    return
+                }
+
+                nbt.parse(data, (err, parsed) => {
+                    if (err) {
+                        logger.warn('Unable to parse servers.dat', err)
+                        callback()
+                        return
+                    }
+
+                    patchData(parsed)
+                })
+            })
+        } else {
+            patchData({
+                type: 'compound',
+                name: '',
+                value: {
+                    servers: {
+                        type: 'list',
+                        value: {
+                            type: 'compound',
+                            value: []
+                        }
+                    }
+                }
+            })
         }
     }
 
