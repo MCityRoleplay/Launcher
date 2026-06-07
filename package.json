@@ -1,6 +1,6 @@
 {
   "name": "mcitylauncher",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "productName": "MCity Launcher",
   "description": "Modded Minecraft Launcher",
   "author": "Daniel Scalzi (https://github.com/dscalzi/)",
@@ -49,5 +49,14 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MCityRoleplay/Launcher.git"
+  },
+  "build": {
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "MCityRoleplay",
+        "repo": "Launcher"
+      }
+    ]
   }
 }
