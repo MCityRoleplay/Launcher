@@ -460,15 +460,13 @@ ipcRenderer.on('distributionIndexDone', async (event, res) => {
 
 async function requestMicrophoneAccess() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            audio: true
-        })
-
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        stream.getTracks().forEach(track => track.stop()) // release immediately
         console.log('Microphone access granted')
-        return stream
+        return true
     } catch(error) {
         console.error('Microphone access denied:', error)
-        return null
+        return false
     }
 }
 
