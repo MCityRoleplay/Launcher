@@ -38,7 +38,8 @@ mac:
 
 # Linux Configuration
 linux: 
-  target: 'AppImage'
+  - target: 'AppImage'
+    arch: x64
   maintainer: 'MCityRoleplay'
   vendor: 'MCityRoleplay'
   synopsis: 'Modded Minecraft Launcher'
