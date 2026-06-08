@@ -1,7 +1,7 @@
 {
   "name": "mcitylauncher",
-  "version": "1.0.2",
-  "productName": "MCity Launcher",
+  "version": "1.0.3",
+  "productName": "MCity-Launcher",
   "description": "Modded minecraft launcher for the MCity Roleplay server.",
   "author": "Daniel Scalzi (https://github.com/dscalzi/)",
   "license": "UNLICENSED",
