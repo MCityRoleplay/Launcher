@@ -148,8 +148,10 @@ function updateSelectedAccount(authUser){
         if(authUser.displayName != null){
             username = authUser.displayName
         }
-        if(authUser.uuid != null){
+        if(authUser.uuid != null && authUser.type !== 'offline'){
             document.getElementById('avatarContainer').style.backgroundImage = `url('https://mc-heads.net/body/${authUser.uuid}/right')`
+        } else {
+            document.getElementById('avatarContainer').style.backgroundImage = `url('assets/images/SealCircle.png')`
         }
     }
     user_text.innerHTML = username

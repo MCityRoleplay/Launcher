@@ -20,7 +20,8 @@ const VIEWS = {
     login: '#loginContainer',
     settings: '#settingsContainer',
     welcome: '#welcomeContainer',
-    waiting: '#waitingContainer'
+    waiting: '#waitingContainer',
+    offlineLogin: '#offlineLoginContainer'
 }
 
 // The currently shown view container.
@@ -344,12 +345,17 @@ async function validateSelectedAccount(){
             setOverlayHandler(() => {
 
                 const isMicrosoft = selectedAcc.type === 'microsoft'
+                const isOffline = selectedAcc.type === 'offline'
 
-                if(isMicrosoft) {
+                if(isOffline) {
+                    // Offline accounts don't need re-login, just re-add them
+                    ConfigManager.addOfflineAuthAccount(selectedAcc.username)
+                    ConfigManager.save()
+                    return
+                } else if(isMicrosoft) {
                     // Empty for now
                 } else {
                     // Mojang
-                    // For convenience, pre-populate the username of the account.
                     document.getElementById('loginUsername').value = selectedAcc.username
                     validateEmail(selectedAcc.username)
                 }

@@ -1,0 +1,24 @@
+<div id="offlineLoginContainer" style="display: none;">
+    <div id="loginContent">
+        <form id="offlineLoginForm">
+            <img id="loginImageSeal" src="assets/images/SealCircle.png"/>
+            <span id="loginSubheader">OFFLINE LOGIN</span>
+            <div class="loginFieldContainer">
+                <span class="loginErrorSpan" id="offlineLoginError">* Invalid Value</span>
+                <input id="offlineLoginUsername" class="loginField" type="text" placeholder="USERNAME"/>
+            </div>
+            <button id="offlineLoginButton" disabled>
+                <div id="loginButtonContent">
+                    PLAY OFFLINE
+                    <svg id="loginSVG" viewBox="0 0 24.87 13.97">
+                        <defs>
+                            <style>.arrowLine{fill:none;stroke:#FFF;stroke-width:2px;transition: 0.25s ease;}</style>
+                        </defs>
+                        <polyline class="arrowLine" points="0.71 13.26 12.56 1.41 24.16 13.02"/>
+                    </svg>
+                </div>
+            </button>
+        </form>
+    </div>
+    <script src="./assets/js/scripts/offlineLogin.js"></script>
+</div>

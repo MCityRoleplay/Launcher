@@ -3,6 +3,8 @@ const { LoggerUtil } = require('helios-core')
 const os   = require('os')
 const path = require('path')
 
+const crypto = require('node:crypto')
+
 const logger = LoggerUtil.getLogger('ConfigManager')
 
 const sysRoot = process.env.APPDATA || (process.platform == 'darwin' ? process.env.HOME + '/Library/Application Support' : process.env.HOME)
@@ -397,6 +399,23 @@ exports.addMicrosoftAuthAccount = function(uuid, accessToken, name, mcExpires, m
             refresh_token: msRefreshToken,
             expires_at: msExpires
         }
+    }
+    return config.authenticationDatabase[uuid]
+}
+
+exports.addOfflineAuthAccount = function(username) {
+    const uuid = crypto.createHash('md5')
+        .update('OfflinePlayer:' + username)
+        .digest('hex')
+        .replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5')
+
+    config.selectedAccount = uuid
+    config.authenticationDatabase[uuid] = {
+        type: 'offline',
+        accessToken: 'offline',
+        username: username.trim(),
+        uuid: uuid,
+        displayName: username.trim()
     }
     return config.authenticationDatabase[uuid]
 }
