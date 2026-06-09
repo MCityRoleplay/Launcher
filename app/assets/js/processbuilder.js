@@ -916,6 +916,8 @@ class ProcessBuilder {
     forceServerResourcePack(callback) {
         const serversDat = path.join(this.gameDir, 'servers.dat')
 
+        fs.ensureDirSync(this.gameDir)
+
         const serverName = this.server.rawServer.name
         const serverIp = this.server.rawServer.address
 
