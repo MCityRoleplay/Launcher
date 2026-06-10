@@ -913,6 +913,44 @@ class ProcessBuilder {
         }
     }
 
+    applyDefaultKeybinds(callback) {
+        const optionsFile = path.join(this.gameDir, 'options.txt')
+
+        if(fs.existsSync(optionsFile)) {
+            callback()
+            return
+        }
+
+        fs.ensureDirSync(this.gameDir)
+
+        const https = require('https')
+        const url = 'https://mcityroleplay.github.io/Distribution/files/options.txt'
+
+        https.get(url, (res) => {
+            if(res.statusCode !== 200) {
+                logger.warn(`Failed to fetch default keybinds, status: ${res.statusCode}`)
+                callback()
+                return
+            }
+
+            let data = ''
+            res.on('data', (chunk) => { data += chunk })
+            res.on('end', () => {
+                fs.writeFile(optionsFile, data, 'UTF-8', (err) => {
+                    if(err) {
+                        logger.warn('Unable to write default keybinds', err)
+                    } else {
+                        logger.info('Applied default keybinds from remote.')
+                    }
+                    callback()
+                })
+            })
+        }).on('error', (err) => {
+            logger.warn('Unable to fetch default keybinds', err)
+            callback()
+        })
+    }
+
     forceServerResourcePack(callback) {
         const serversDat = path.join(this.gameDir, 'servers.dat')
 
